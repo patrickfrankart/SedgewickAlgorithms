@@ -44,10 +44,6 @@ public class FastCollinearPoints {
         ArrayList<LineSegment> segs = new ArrayList<LineSegment>();
 
         Point[] pointsCopy = this.points;
-//        for (Point point : pointsCopy) {
-//            System.out.println(point);
-//        }
-//        int[] pSlopes = new int[pointsCopy.length];
 
         double slope;
         int lineStartIndex = 0;
@@ -55,103 +51,50 @@ public class FastCollinearPoints {
         int numberSegs = 0;
 
         Arrays.sort(pointsCopy);
-//        System.out.println("Before for-loop");
         for (int i = 0; i < pointsCopy.length; i++) {
             Point origin = pointsCopy[i];
             ArrayList<Point> linePoints = new ArrayList<Point>();
             linePoints.add(origin);
             Arrays.sort(pointsCopy, origin.slopeOrder());
-//            System.out.println("Origin: " + origin.toString());
-//            System.out.println("Points: " + origin.toString() + " , " + pointsCopy[0]);
-//            if (slope != points[i].slopeTo(points[i+1])) {
             if (pointsCopy.length < 2) {
                 return segs;
             }
-//            else if (origin.compareTo(pointsCopy[0]) != 0) {
-//                slope = origin.slopeTo(pointsCopy[0]);
-//                linePoints.add(pointsCopy[0]);
-//            }
-//            else {
-                slope = origin.slopeTo(pointsCopy[1]);
-                linePoints.add(pointsCopy[1]);
-//            }
+            slope = origin.slopeTo(pointsCopy[1]);
+            linePoints.add(pointsCopy[1]);
 
-//            System.out.println("Before second for-loop");
-                for (int j = 2; j < pointsCopy.length; j++) {
-//                    if (origin.compareTo(new Point(8192, 25088)) == 0) {
-//                        System.out.println("Found it.");
-//                        System.out.println("Origin: " + origin.toString());
-//                        System.out.println("Slope: " + slope);
-//                        for (Point point : linePoints) {
-//                            System.out.println(point.toString() + " Slope with origin: " + origin.slopeTo(point));
-//                        }
-                   // }
-
-//                System.out.println("Points: " + origin.toString() + " , " + pointsCopy[j]);
-//                System.out.println("Slope: " + slope + " pointsCopy["+ i +"].slopeTo(pointsCopy[" + j + "]) " + pointsCopy[i].slopeTo(pointsCopy[j]));
-                    if (origin.slopeTo(pointsCopy[j]) == slope && origin.compareTo(pointsCopy[j]) != 0) {
-
-//                    System.out.println("Slope from " + origin.toString() + " to " + pointsCopy[j].toString() + ": " + slope);
-
-                        linePoints.add(pointsCopy[j]);
-
-                    }
-                    else if (linePoints.size() >= 4 && origin.compareTo(pointsCopy[j]) != 0){
-
-                        slope = origin.slopeTo(pointsCopy[j]);
-//                        System.out.println("Should add a line now");
-                        if (origin.compareTo(minPoint(linePoints)) == 0) {
-//                            for (Point point : linePoints) {
-//                                System.out.println(point.toString());
-//                            }
-//                            System.out.println("Max: " + maxPoint(linePoints));
-//                            System.out.println("Min: " + minPoint(linePoints));
-                            segs.add(new LineSegment(origin, maxPoint(linePoints)));
-
-                            numberSegs++;
-
-                        }
-
-                        linePoints = new ArrayList<Point>();
-                        linePoints.add(origin);
-                        linePoints.add(pointsCopy[j]);
-                        slope = origin.slopeTo(pointsCopy[j]);
-                    }
-                    else if (origin.compareTo(pointsCopy[j]) != 0){
-
-//                        System.out.println("Didn't add a line.");
-                        slope = origin.slopeTo(pointsCopy[j]);
-                        linePoints = new ArrayList<Point>();
-                        linePoints.add(origin);
-                        linePoints.add(pointsCopy[j]);
-
-//                    System.out.println("Slope: " + slope);
-                    }
-//                    System.out.println("linePoints.size(): " + linePoints.size());
+            for (int j = 2; j < pointsCopy.length; j++) {
+                if (origin.slopeTo(pointsCopy[j]) == slope && origin.compareTo(pointsCopy[j]) != 0) {
+                    linePoints.add(pointsCopy[j]);
                 }
-                if (linePoints.size() >= 4) {
+                else if (linePoints.size() >= 4 && origin.compareTo(pointsCopy[j]) != 0){
 
+                    slope = origin.slopeTo(pointsCopy[j]);
                     if (origin.compareTo(minPoint(linePoints)) == 0) {
-//                        for (Point point : linePoints) {
-//                            System.out.println(point.toString());
-//                        }
-//                        System.out.println("Max: " + maxPoint(linePoints));
-//                        System.out.println("Min: " + minPoint(linePoints));
                         segs.add(new LineSegment(origin, maxPoint(linePoints)));
-
-                        linePoints = new ArrayList<Point>();
-                        linePoints.add(origin);
-//                        linePoints.add(pointsCopy[j]);
-//                        slope = origin.slopeTo(pointsCopy[j]);
                         numberSegs++;
-
                     }
+                    linePoints = new ArrayList<Point>();
+                    linePoints.add(origin);
+                    linePoints.add(pointsCopy[j]);
+                    slope = origin.slopeTo(pointsCopy[j]);
                 }
-                Arrays.sort(pointsCopy);
-         //   }
-
+                else if (origin.compareTo(pointsCopy[j]) != 0){
+                    slope = origin.slopeTo(pointsCopy[j]);
+                    linePoints = new ArrayList<Point>();
+                    linePoints.add(origin);
+                    linePoints.add(pointsCopy[j]);
+                }
+            }
+            if (linePoints.size() >= 4) {
+                if (origin.compareTo(minPoint(linePoints)) == 0) {
+                    segs.add(new LineSegment(origin, maxPoint(linePoints)));
+                    linePoints = new ArrayList<Point>();
+                    linePoints.add(origin);
+                    numberSegs++;
+                }
+            }
+            Arrays.sort(pointsCopy);
         }
-//        System.out.println("After for-loop " + numberSegs);
         this.numberOfSegments = numberSegs;
 
         return segs;
@@ -171,7 +114,6 @@ public class FastCollinearPoints {
     private Point maxPoint(ArrayList<Point> points) {
         Point max = points.get(0);
         for (int i = 1; i < points.size(); i++) {
-//            System.out.println(max.compareTo(points.get(i)));
             if (max.compareTo(points.get(i)) < 0) {
                 max = points.get(i);
             }
